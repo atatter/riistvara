@@ -40,23 +40,33 @@ void uart3_init(void) {
     UCSR3B = _BV(RXEN3);   /* Enable RX */    
 }
 
-void uart0_putchar(char c, FILE *stream) {
+int uart0_putchar(char c, FILE *stream) {
+    (void) stream;
+
     if (c == '\n') {
-        uart_putchar('\r', stream);
+        uart0_putchar('\r', stream);
     }
     loop_until_bit_is_set(UCSR0A, UDRE0);
     UDR0 = c;
+
+    return 0;
 }
 
-void uart3_putchar(char c, FILE *stream) {
+int uart3_putchar(char c, FILE *stream) {
+    (void) stream;
+
     if (c == '\n') {
         uart3_putchar('\r', stream);
     }
     loop_until_bit_is_set(UCSR3A, UDRE3);
     UDR3 = c;
+
+    return 0;
 }
 
-char uart0_getchar(FILE *stream) {
+int uart0_getchar(FILE *stream) {
+    (void) stream;
+
     loop_until_bit_is_set(UCSR0A, RXC0);
     return UDR0;
 }
