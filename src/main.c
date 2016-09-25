@@ -5,12 +5,12 @@
 #include <assert.h>
 #include "uart.h"
 
-#define	BLINK_DELAY_MS	1000
+#define BLINK_DELAY_MS 1000
 
-int	main (void)
+int main (void)
 {
-    /*	set	pin	3	of	PORTB	for	output*/
-    DDRA	|=	_BV(DDA3);
+    /* set pin 3 of PORTB for output*/
+    DDRA |= _BV(DDA3);
     /* Init error console as stderr in UART3 and print user code info */
     uart3_init();
     stderr = &uart3_out;
@@ -27,9 +27,9 @@ int	main (void)
     assert(array);
     /* End test assert */
     
-    while(1)	{
-        /*	set	pin	3	high	to	turn	led	on	*/
-        PORTA	|=	_BV(PORTA3);
+    while(1) {
+        /* set pin 3 high to turn led on */
+        PORTA |= _BV(PORTA3);
         _delay_ms(BLINK_DELAY_MS);
         /* Test assert - REMOVE IN FUTURE LABS */
         /* Increase memory allocated for array by 100 chars
@@ -40,8 +40,8 @@ int	main (void)
                 (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval));
         assert(array);
         /* End test assert */
-        /*	set	pin	3	low	to	turn	led	off	*/
-        PORTA	&=	~_BV(PORTA3);
+        /* set pin 3 low to turn led off */
+        PORTA &= ~_BV(PORTA3);
         _delay_ms(BLINK_DELAY_MS);
     }
 }
