@@ -12,7 +12,7 @@
 
 /* http://www.cs.mun.ca/~rod/Winter2007/4723/notes/serial/serial.html */
 
-void uart_init(void) {
+void uart0_init(void) {
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
     
@@ -26,7 +26,21 @@ void uart_init(void) {
     UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */    
 }
 
-void uart_putchar(char c, FILE *stream) {
+void uart3_init(void) {
+    UBRR3H = UBRRH_VALUE;
+    UBRR3L = UBRRL_VALUE;
+    
+#if USE_2X
+    UCSR3A |= _BV(U2X3);
+#else
+    UCSR3A &= ~(_BV(U2X3));
+#endif
+
+    UCSR3C = _BV(UCSZ31) | _BV(UCSZ30); /* 8-bit data */ 
+    UCSR3B = _BV(RXEN3);   /* Enable RX */    
+}
+
+void uart0_putchar(char c, FILE *stream) {
     if (c == '\n') {
         uart_putchar('\r', stream);
     }
@@ -34,7 +48,15 @@ void uart_putchar(char c, FILE *stream) {
     UDR0 = c;
 }
 
-char uart_getchar(FILE *stream) {
+void uart3_putchar(char c, FILE *stream) {
+    if (c == '\n') {
+        uart3_putchar('\r', stream);
+    }
+    loop_until_bit_is_set(UCSR3A, UDRE3);
+    UDR3 = c;
+}
+
+char uart0_getchar(FILE *stream) {
     loop_until_bit_is_set(UCSR0A, RXC0);
     return UDR0;
 }
