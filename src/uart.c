@@ -15,29 +15,28 @@
 void uart0_init(void) {
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
-    
+
 #if USE_2X
     UCSR0A |= _BV(U2X0);
 #else
     UCSR0A &= ~(_BV(U2X0));
 #endif
 
-    UCSR0C = _BV(UCSZ01) | _BV(UCSZ00); /* 8-bit data */ 
-    UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */    
+    UCSR0C = _BV(UCSZ01) | _BV(UCSZ00); /* 8-bit data */
+    UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
 }
 
 void uart3_init(void) {
-    UBRR3H = UBRRH_VALUE;
-    UBRR3L = UBRRL_VALUE;
-    
+	UBRR3H = UBRRH_VALUE;
+	UBRR3L = UBRRL_VALUE;
 #if USE_2X
-    UCSR3A |= _BV(U2X3);
+	UCSR3A |= _BV(U2X3);
 #else
-    UCSR3A &= ~(_BV(U2X3));
+	UCSR3A &= ~(_BV(U2X3));
 #endif
+	UCSR3C = _BV(UCSZ31) | _BV(UCSZ30); /* 8-bit data */
+	UCSR3B = _BV(TXEN3); /* Enable TX */
 
-    UCSR3C = _BV(UCSZ31) | _BV(UCSZ30); /* 8-bit data */ 
-    UCSR3B = _BV(RXEN3);   /* Enable RX */    
 }
 
 int uart0_putchar(char c, FILE *stream) {
