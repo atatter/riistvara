@@ -8,6 +8,7 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 AVRDUDE = avrdude
 CODE_FORMATTER = tooling/format-code.sh
+AVRSIZE = avr-size
 
 BOARD = atmega2560
 
@@ -22,7 +23,8 @@ ELF = $(BINDIR)/$(BOARD)-user-code.elf
 
 # Source files. wildard "uses" all .c files in src directory
 SRCDIR = src
-SRC = $(wildcard $(SRCDIR)/*.c)
+BUILD_LIBS_DIR = lib
+SRC = $(wildcard $(SRCDIR)/*.c $(BUILD_LIBS_DIR)/*/*.c)
 
 # Define object files from .c files defined above
 OBJ=$(SRC:.c=.o)
@@ -61,6 +63,9 @@ AVRDUDEARGS =	-p $(BOARD) \
 				-V \
 				-D
 
+AVRSIZEARGS =	-C \
+				--mcu=$(BOARD)
+
 all: $(ELF) $(TARGET)
 
 %.o : %.c
@@ -76,6 +81,7 @@ clean:
 #Do not remove .placeholder in BINDIR
 	find $(BINDIR) -type f -not -name '.placeholder' -print0 | xargs -0 rm -f --
 	rm -f $(SRCDIR)/*.o
+	rm -fr $(BUILD_LIBS_DIR)/*/*.o
 
 install:
 	$(AVRDUDE) $(AVRDUDEARGS) -U flash:w:$(TARGET)
@@ -83,4 +89,7 @@ install:
 format:
 	$(CODE_FORMATTER) $(SRC)
 
-.PHONY: clean install format
+size:
+	$(AVRSIZE) $(AVRSIZEARGS) $(ELF)
+
+.PHONY: clean install format size
