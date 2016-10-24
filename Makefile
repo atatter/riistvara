@@ -46,10 +46,14 @@ CFLAGS =	-Wall \
 			-mmcu=$(BOARD) \
 			-DF_CPU=16000000UL \
 			-DGIT_DESCR=\"$(shell git describe --abbrev=6 --dirty --always --tags --long)\" \
-			-std=c11
+			-std=c11 \
+			-flto \
+			-fdata-sections -ffunction-sections
 
 # Linker flags
-LDFLAGS = -mmcu=$(BOARD)
+LDFLAGS = 	-mmcu=$(BOARD) \
+			-flto \
+			-Wl,-gc-sections
 
 OBJCOPYARGS =	-O ihex \
 				-R .eeprom
