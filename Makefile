@@ -43,15 +43,16 @@ CFLAGS =	-Wall \
 			-Werror \
 			-Wfatal-errors \
 			-Os \
+			-flto \
+			-fdata-sections \
+			-ffunction-sections \
 			-mmcu=$(BOARD) \
 			-DF_CPU=16000000UL \
 			-DGIT_DESCR=\"$(shell git describe --abbrev=6 --dirty --always --tags --long)\" \
-			-std=c11 \
-			-flto \
-			-fdata-sections -ffunction-sections
+			-std=c11
 
 # Linker flags
-LDFLAGS = 	-mmcu=$(BOARD) \
+LDFLAGS =	-mmcu=$(BOARD) \
 			-flto \
 			-Wl,-gc-sections
 
@@ -91,7 +92,7 @@ install:
 	$(AVRDUDE) $(AVRDUDEARGS) -U flash:w:$(TARGET)
 
 format:
-	$(CODE_FORMATTER) $(SRC)
+	$(CODE_FORMATTER) $(SRCDIR)/*.c
 
 size:
 	$(AVRSIZE) $(AVRSIZEARGS) $(ELF)

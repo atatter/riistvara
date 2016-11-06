@@ -43,18 +43,18 @@ int main (void)
         fprintf_P(stdout, ENTER_MONTH_LETTER);
         fscanf(stdin, "%c", &input);
         fprintf(stdout, "%c\n", input);
-        //lcd_goto(0x40);
-		  for (int i = 0; i < 6; i++) {
-			  if (!strncmp_P(&input,MONTHS[i], 1)) {
-				  fprintf_P(stdout, MONTHS[i]);
-				  fputc('\n', stdout);
-				  lcd_puts_P(MONTHS[i]);
-				  lcd_putc(' ');
-			  }
-		  }
-		  lcd_puts_P(CLEAN_LINE);
-		 
-		  
+        lcd_goto(0x40);
+
+        for (int i = 0; i < 6; i++) {
+            if (!strncmp_P(&input, MONTHS[i], 1)) {
+                fprintf_P(stdout, MONTHS[i]);
+                fputc('\n', stdout);
+                lcd_puts_P(MONTHS[i]);
+                lcd_putc(' ');
+            }
+        }
+
+        lcd_puts_P(CLEAN_LINE);
         /* set pin 3 high to turn led on */
         PORTA |= _BV(PORTA3);
         _delay_ms(BLINK_DELAY_MS);

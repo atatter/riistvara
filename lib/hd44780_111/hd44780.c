@@ -512,8 +512,6 @@ Returns:  none
 *************************************************************************/
 void lcd_goto(uint8_t pos)
 {
-    //Do not go outside of screen limits
-    assert(pos < LCD_COLS_MAX);
     lcd_command((1 << LCD_DDRAM) + pos);
 }
 
