@@ -2,19 +2,20 @@
 #ifndef _HMI_MSG_H
 #define _HMI_MSG_H
 
-const char MONTHS[6][9] PROGMEM = {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-      };
+#define STUD_NAME "Aleks Tatter"
+#define VER_FW "Version: %S built on: %S %S\n"
+#define VER_LIBC "avr-libc version: %S\n"
+#define ENTER_MONTH_LETTER "Enter Month name first letter >"
+#define CLEAN_LINE "                "
+#define UPTIME "Uptime: %lu s"
 
-const char STUD_NAME[] PROGMEM = "Aleks, Tatter";
-const char VER_FW[]  PROGMEM = "Version: %s built on: %s %s\n";
-const char VER_LIBC[] PROGMEM = "avr-libc version: %s\n";
-const char ENTER_MONTH_LETTER[] PROGMEM = "Enter Month name first letter >";
-const char CLEAN_LINE[] PROGMEM = "                ";
+const char jan[] PROGMEM = "January";
+const char feb[] PROGMEM = "February";
+const char mar[] PROGMEM = "March";
+const char apr[] PROGMEM = "April";
+const char may[] PROGMEM = "May";
+const char jun[] PROGMEM = "June";
+
+PGM_P const months[] PROGMEM = {jan, feb, mar, apr, may, jun};
 
 #endif /* _HMI_MSG_H */
