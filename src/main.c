@@ -10,8 +10,14 @@
 #include "uart-wrapper.h"
 #include "print_helper.h"
 #include "../lib/hd44780_111/hd44780.h"
+#include "../lib/helius_microrl/microrl.h"
+#include "cli_microrl.h"
 
 #define BAUDRATE 9600
+
+// Create microrl object and pointer on it
+static microrl_t rl;
+static microrl_t *prl = &rl;
 
 static inline void init_system_clock(void)
 {
@@ -36,30 +42,26 @@ static inline void init (void)
     // Initialize uart
     uart0_init(UART_BAUD_SELECT(BAUDRATE, F_CPU));
     uart3_init(UART_BAUD_SELECT(BAUDRATE, F_CPU));
-    stdout = stdin = &uart0_io;
+    stdout = &uart0_out;
     stderr = &uart3_out;
 }
 
 static inline void print_info (void)
 {
     // Print versions
-    fprintf_P(stderr, PSTR(VER_FW), PSTR(GIT_DESCR), PSTR(__DATE__),
+    fprintf_P(stderr, PSTR(VER_FW "\n"), PSTR(GIT_DESCR), PSTR(__DATE__),
               PSTR(__TIME__));
-    fprintf_P(stderr, PSTR(VER_LIBC), PSTR(__AVR_LIBC_VERSION_STRING__));
+    fprintf_P(stderr, PSTR(VER_LIBC "\n"), PSTR(__AVR_LIBC_VERSION_STRING__));
+    fprintf_P(stderr, PSTR(VER_GCC "\n"), PSTR(__VERSION__));
     // Print student name to lcd and uart0
     fprintf_P(stdout, PSTR(STUD_NAME "\n"));
     lcd_puts_P(PSTR(STUD_NAME));
-    // Print ascii table
-    print_ascii_tbl(stdout);
-    unsigned char ascii[128];
+}
 
-    for (unsigned char i = 0; i < sizeof(ascii); i++) {
-        ascii[i] = i;
-    }
-
-    print_for_human(stdout, ascii, sizeof(ascii));
-    // Print info text
-    fprintf_P(stdout, PSTR(ENTER_MONTH_LETTER));
+static inline void init_microrl(void)
+{
+    microrl_init (prl, cli_print);
+    microrl_set_execute_callback (prl, cli_execute);
 }
 
 static inline void heartbeat (void)
@@ -80,36 +82,15 @@ static inline void heartbeat (void)
     PORTA ^= _BV(PORTA3);
 }
 
-static inline void search (char input)
-{
-    fprintf(stdout, "%c\n", input);
-    lcd_goto(0x40);
-
-    for (int i = 0; i < 6; i++) {
-        if (!strncmp_P(&input, (PGM_P)pgm_read_word(&months[i]), 1)) {
-            fprintf_P(stdout, (PGM_P)pgm_read_word(&months[i]));
-            fputc('\n', stdout);
-            lcd_puts_P((PGM_P)pgm_read_word(&months[i]));
-            lcd_putc(' ');
-        }
-    }
-
-    lcd_puts_P(PSTR(CLEAN_LINE));
-    fprintf_P(stdout, PSTR(ENTER_MONTH_LETTER));
-}
-
 int main (void)
 {
     init();
     print_info();
+    init_microrl();
 
     while (1) {
         heartbeat();
-        char i = uart0_getchar(stdin);
-
-        if (i != 0) {
-            search(i);
-        }
+        microrl_insert_char (prl, cli_get_char());
     }
 }
 
