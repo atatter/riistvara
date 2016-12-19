@@ -16,5 +16,13 @@ const char ascii_cmd[] PROGMEM = ASCII_CMD;
 const char ascii_help[] PROGMEM = ASCII_HELP;
 const char month_cmd[] PROGMEM = MONTH_CMD;
 const char month_help[] PROGMEM = MONTH_HELP;
+const char rfid_read_cmd[] PROGMEM = RFID_READ_CMD;
+const char rfid_read_help[] PROGMEM = RFID_READ_HELP;
+const char rfid_add_cmd[] PROGMEM = RFID_ADD_CMD;
+const char rfid_add_help[] PROGMEM = RFID_ADD_HELP;
+const char rfid_remove_cmd[] PROGMEM = RFID_REMOVE_CMD;
+const char rfid_remove_help[] PROGMEM = RFID_REMOVE_HELP;
+const char rfid_list_cmd[] PROGMEM = RFID_LIST_CMD;
+const char rfid_list_help[] PROGMEM = RFID_LIST_HELP;
 
 PGM_P const months[] PROGMEM = {jan, feb, mar, apr, may, jun};

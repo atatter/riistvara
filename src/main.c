@@ -12,6 +12,8 @@
 #include "../lib/hd44780_111/hd44780.h"
 #include "../lib/helius_microrl/microrl.h"
 #include "cli_microrl.h"
+#include "../lib/matejx_avr_lib/mfrc522.h"
+#include "rfid_helper.h"
 
 #define BAUDRATE 9600
 
@@ -32,6 +34,8 @@ static inline void init (void)
 {
     // Set pin 25 as led output
     DDRA |= _BV(DDA3);
+    // Pin for rfid lab
+    DDRA |= _BV(DDA1);
     // Initialize and clear lcd
     lcd_init();
     lcd_clrscr();
@@ -64,6 +68,13 @@ static inline void init_microrl(void)
     microrl_set_execute_callback (prl, cli_execute);
 }
 
+static inline void init_rfid_reader(void)
+{
+    /* Init RFID-RC522 */
+    MFRC522_init();
+    PCD_Init();
+}
+
 static inline void heartbeat (void)
 {
     // Previous time
@@ -82,15 +93,70 @@ static inline void heartbeat (void)
     PORTA ^= _BV(PORTA3);
 }
 
+static inline void rfid_check (void)
+{
+    static uint32_t message_timeout;
+    static uint32_t door_timeout;
+    static time_t previous_time;
+    time_t current_time = time(NULL);
+    Uid uid;
+    Uid *uid_ptr = &uid;
+
+    if (PICC_IsNewCardPresent()) {
+        PICC_ReadCardSerial(uid_ptr);
+        card_t *card = rfid_get_card_with_uid(uid_ptr);
+
+        if (card == NULL) {
+            lcd_goto(0x40);
+            lcd_puts_P(PSTR(ACCESS_DENIED));
+            lcd_puts_P(PSTR(CLEAN_LINE));
+            message_timeout = 8;
+            PORTA &= ~_BV(PORTA1);
+        } else {
+            lcd_goto(0x40);
+            lcd_puts(card->name);
+            lcd_puts_P(PSTR(CLEAN_LINE));
+            PORTA |= _BV(PORTA1);
+            message_timeout = 8;
+            door_timeout = 3;
+        }
+    }
+
+    if (current_time <= previous_time) {
+        return;
+    }
+
+    previous_time = current_time;
+
+    if (message_timeout > 0) {
+        message_timeout--;
+
+        if (message_timeout == 0) {
+            lcd_goto(0x40);
+            lcd_puts_P(PSTR(CLEAN_LINE));
+        }
+    }
+
+    if (door_timeout > 0) {
+        door_timeout--;
+
+        if (door_timeout == 0) {
+            PORTA &= ~_BV(PORTA1);
+        }
+    }
+}
+
 int main (void)
 {
     init();
     print_info();
     init_microrl();
+    init_rfid_reader();
 
     while (1) {
         heartbeat();
         microrl_insert_char (prl, cli_get_char());
+        rfid_check();
     }
 }
 
