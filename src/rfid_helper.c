@@ -52,7 +52,11 @@ card_t* rfid_uid_to_card(Uid *uid)
 
 card_t* rfid_get_card_with_uid(Uid *uid)
 {
-    return rfid_find_card(rfid_uid_to_card(uid));
+    card_t *card1 = rfid_uid_to_card(uid);
+    card_t *card2 = rfid_find_card(card1);
+    free(card1);
+
+    return card2;
 }
 
 void rfid_add_card(Uid *uid, const char *name)
