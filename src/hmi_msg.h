@@ -36,6 +36,7 @@
 #define CARD_IS_ON_LIST "This card is already on the list"
 #define NO_CARDS "No cards on the list"
 #define REMOVING "Removing..."
+#define NO_MALLOC "Could not allocate memory!"
 
 extern PGM_P const months[];
 extern const char help_cmd[];

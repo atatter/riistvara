@@ -45,7 +45,7 @@ card_t* rfid_uid_to_card(Uid *uid)
     new_card = malloc(sizeof(card_t));
 
     if(new_card == NULL) {
-        fprint("Could not allocate memory!");
+        printf_P(PSTR(NO_MALLOC));
         return NULL;
     }
 
@@ -92,7 +92,7 @@ void rfid_add_card(Uid *uid, const char *name)
     new_name = malloc(strlen(name) + 1);
 
     if(new_name == NULL) {
-        printf("Could not allocate memory!");
+        printf_P(PSTR(NO_MALLOC));
         free(new_card);
         return;
     }
