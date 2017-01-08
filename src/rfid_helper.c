@@ -43,6 +43,12 @@ card_t* rfid_uid_to_card(Uid *uid)
 {
     card_t *new_card;
     new_card = malloc(sizeof(card_t));
+
+    if(new_card == NULL) {
+        fprint("Could not allocate memory!");
+        return NULL;
+    }
+
     memcpy(new_card->uid, uid->uidByte, uid->size);
     new_card->size = uid->size;
     new_card->name = NULL;
@@ -53,6 +59,11 @@ card_t* rfid_uid_to_card(Uid *uid)
 card_t* rfid_get_card_with_uid(Uid *uid)
 {
     card_t *card1 = rfid_uid_to_card(uid);
+
+    if(card1 == NULL) {
+        return NULL;
+    }
+
     card_t *card2 = rfid_find_card(card1);
     free(card1);
 
@@ -63,18 +74,29 @@ void rfid_add_card(Uid *uid, const char *name)
 {
     card_t *new_card;
     new_card = rfid_uid_to_card(uid);
+
+    if(new_card == NULL) {
+        return;
+    }
+
     card_t *search = rfid_find_card(new_card);
 
     if (search) {
         printf_P(PSTR(CARD_IS_ON_LIST "\n"));
         print(search);
-        free(new_card->name);
         free(new_card);
         return;
     }
 
     char *new_name;
     new_name = malloc(strlen(name) + 1);
+
+    if(new_name == NULL) {
+        printf("Could not allocate memory!");
+        free(new_card);
+        return;
+    }
+
     strcpy(new_name, name);
     new_card->name = new_name;
 
@@ -90,8 +112,6 @@ void rfid_add_card(Uid *uid, const char *name)
 
         current->next = new_card;
     }
-
-    return;
 }
 
 void rfid_remove_card(const char *name)
